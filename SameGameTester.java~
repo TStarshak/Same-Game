@@ -1,0 +1,514 @@
+import javafx.application.Application;
+import javafx.scene.control.Button;
+import javafx.scene.shape.Circle;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.stage.Stage;
+import org.junit.*;
+
+/**
+ * The SameGameTester class represents tests of the methods involved with the SameGame class, including methods in the GameButton class that are called in the SameGame class
+ * @author Trey Starshak
+ */
+public class SameGameTester extends Application {
+  
+ /**
+  * Needed Tests
+  * 
+  * SameGame Tests
+  * Setter/Getter?
+  * openURL - mention in testing doc
+  * start - mention in testing doc
+  * handle - mention in testing doc
+  * isColor - mention in testing doc
+  * updateColor - mention in testing doc
+  * 
+  * GameButton Tests
+  * setter/getter?
+  */
+  
+  private GameButton[][] singleBoard;
+  private GameButton[][] crossBoard;
+  private GameButton[][] starBoard;
+  private GameButton[][] nullBoard;
+  private GameButton[][] testBoard;
+  private GameButton[][] testSingleBoard;
+  private GameButton[][] testNullBoard;
+  private GameButton[][] winBoard;
+  private GameButton[][] loseBoard;
+  private GameButton[][] columnsBoard;
+  private GameButton[][] testColumnsBoard;
+  private GameButton[][] leftBoard;
+  private GameButton[][] diffBoard;
+  
+  public GameButton[][] getBoard(String board) {
+    if(board.equals("singleBoard")) return singleBoard;
+    if(board.equals("crossBoard")) return crossBoard;
+    if(board.equals("starBoard")) return starBoard;
+    if(board.equals("nullBoard")) return nullBoard;
+    if(board.equals("winBoard")) return winBoard;
+    if(board.equals("loseBoard")) return loseBoard;
+    if(board.equals("columnsBoard")) return columnsBoard;
+    if(board.equals("testColumnsBoard")) return testColumnsBoard;
+    if(board.equals("testBoard")) return testBoard;
+    if(board.equals("testSingleBoard")) return testSingleBoard;
+    if(board.equals("testNullBoard")) return testNullBoard;
+    if(board.equals("leftBoard")) return leftBoard;
+    else return diffBoard;
+  }
+  
+  public void setBoard(GameButton[][] boardArr, String boardStr) {
+    GameButton[][] board = getBoard(boardStr);
+      board = boardArr;
+  }
+  
+  /**
+   * Tests the starScan and crossScan methods.
+   */
+  @Test
+  public void testScan() {
+    SameGame game = new SameGame();
+    //Test starScan when there are multiple objects in each direction
+    setBoards();
+    game.starScan(getBoard("testBoard")[2][2], getBoard("testBoard")[2][2].getColor());
+    for(int i = 0; i < 5; i++) {
+      for(int j = 0; j < 5; j++) {
+        if(!testBoard[j][i].isColor(starBoard[j][i].getColor())) {
+          Assert.fail("Different Colors @: " + i + "x" + j);
+        }
+      }
+    }
+    //Test starScan when there is a single button in a direction
+    setBoards();
+    game.starScan(testBoard[3][3], testBoard[3][3].getColor());
+    for(int i = 0; i < 5; i++) {
+      for(int j = 0; j < 5; j++) {
+        if(!testBoard[j][i].isColor(singleBoard[j][i].getColor())) {
+          Assert.fail("Different Colors @: " + i + "x" + j);
+        }
+      }
+    }
+    //Test starScan when there is no button being changed
+    setBoards();
+    game.starScan(testNullBoard[3][3], testNullBoard[3][3].getColor());
+    for(int i = 0; i < 5; i++) {
+      for(int j = 0; j < 5; j++) {
+        if(!testNullBoard[j][i].isColor(nullBoard[j][i].getColor())) {
+          Assert.fail("Different Colors @: " + i + "x" + j);
+        }
+      }
+    }
+    
+    //Test crossScan when there are multiple buttons to change in each direction
+    setBoards();
+    game.crossScan(testBoard[3][3]);
+    for(int i = 0; i < 5; i++) {
+      for(int j = 0; j < 5; j++) {
+        if(!testBoard[j][i].isColor(crossBoard[j][i].getColor())) {
+          Assert.fail("Different Colors @: " + i + "x" + j);
+        }
+      }
+    }
+    //Test crossScan when there is only one button in a direction
+    setBoards();
+    game.crossScan(testSingleBoard[3][3]);
+      for(int i = 0; i < 5; i++) {
+        for(int j = 0; j < 5; j++) {
+          if(!testSingleBoard[j][i].isColor(singleBoard[j][i].getColor())) {
+            Assert.fail("Different Colors @: " + i + "x" + j);
+          }
+        }
+      } 
+    //Test crossScan when there is no button being changed
+    setBoards();
+    game.crossScan(testNullBoard[3][3]);
+    for(int i = 0; i < 5; i++) {
+      for(int j = 0; j < 5; j++) {
+        if(!testNullBoard[j][i].isColor(nullBoard[j][i].getColor())) {
+          Assert.fail("Different Colors @: " + i + "x" + j);
+        }
+      }
+    }
+  }
+  
+  @Test
+  public void testUpdateBoard() {
+    setBoards();
+    Assert.fail("Test not created");
+  }
+  
+  @Test
+  public void testCheckColumns() {
+    Assert.fail("Test not created"); 
+  }
+  
+  @Test
+  public void testFindLeftButton() {
+    Assert.fail("Test not created");
+  }
+  
+  @Test
+  public void testFindDifference() {
+    Assert.fail("Test not created");
+  }
+
+  
+  /**
+   * Tests the isWon and isLost methods of SameGame
+   */
+  @Test
+  public void testWinLoss() {
+    SameGame game = new SameGame();
+    setBoards();
+    System.out.println(winBoard);
+    if(!game.isWon(getBoard("winBoard"))) {
+      Assert.fail("winBoard has not won");
+    }
+    if(game.isWon(loseBoard)) {
+      Assert.fail("loseBoard shouldn't have won");
+    }
+    if(!game.isLost(loseBoard)) {
+      Assert.fail("loseBoard has not lost");
+    }
+    if(game.isLost(winBoard)) {
+      Assert.fail("winBoard shouldn't have lost");
+    }
+  }
+  
+  /**
+   * Tests the parseGameMode method with actual gameModes and non-existent gameModes 
+   */
+  @Test
+  public void testParseGameMode() {
+    SameGame game = new SameGame();
+    //Test real gamemode entries for CrossGame and the getGameMode method to prove it is stored correctly
+    game.setGameMode(game.parseGameMode("cross"));
+    if(game.parseGameMode("cross") != 0) Assert.fail("cross not found as crossGame");
+    if(game.parseGameMode("crossgame") != 0) Assert.fail("crossgame not found as crossGame");
+    if(game.parseGameMode("Cross") != 0) Assert.fail("Cross not found as crossGame");
+    if(game.parseGameMode("CrossGame") != 0) Assert.fail("CrossGame not found as crossGame");
+    if(game.parseGameMode("crossGame") != 0) Assert.fail("crossGame not found as crossGame");
+    if(game.parseGameMode("0") != 0) Assert.fail("0 not found as crossGame");
+    if(game.getGameMode() != 0) Assert.fail("gameMode not properly stored");
+    //Test real gamemode entries for StarGame and the getGameMode method to prove it is stored correctly
+    game.setGameMode(game.parseGameMode("star"));
+    if(game.parseGameMode("star") != 1) Assert.fail("star not found as starGame");
+    if(game.parseGameMode("stargame") != 1) Assert.fail("stargame not found as starGame");
+    if(game.parseGameMode("Star") != 1) Assert.fail("Star not found as starGame");
+    if(game.parseGameMode("StarGame") != 1) Assert.fail("StarGame not found as starGame");
+    if(game.parseGameMode("starGame") != 1) Assert.fail("starGame not found as starGame");
+    if(game.parseGameMode("1") != 1) Assert.fail("1 not found as starGame");
+    if(game.getGameMode() != 1) Assert.fail("gameMode not properly stored");
+    //Test non-existent gamemode entries
+    if(game.parseGameMode("yeet") != -1) Assert.fail("Found non-existent gamemode");
+    if(game.parseGameMode("stor") != -1) Assert.fail("Found non-existent gamemode");
+    if(game.parseGameMode("criss") != -1) Assert.fail("Found non-existent gamemode");
+    if(game.parseGameMode("2") != -1) Assert.fail("Found non-existent gamemode");
+    if(game.parseGameMode("java") != -1) Assert.fail("Found non-existent gamemode");
+  }
+ 
+  /**
+   * Tests the assignButtons method of the GameButton class. 
+   */
+  public void testAssignButtons() {
+    setBoards();
+    GameButton.assignButtons(testBoard);
+    for(int i = 0; i < 5; i++) {
+      for(int j = 0; j < 5; j++) {
+        //Test assigning topButtons
+        if(i == 0) {
+          if(testBoard[i][j].getTopButton() != null) {
+            Assert.fail("testBoard[i][j] should not have a topButton when i is 0");
+          }
+        }
+        else if(testBoard[i][j].getTopButton() != testBoard[i - 1][j]) {
+          Assert.fail("Incorrect assignmet for testBoard[i][j]: topButton");
+        }
+        //Test assigning bottomButtons
+        if(i == 4) {
+          if(testBoard[i][j].getBottomButton() != null) {
+            Assert.fail("testBoard[i][j] should not have a bottomButton when i is 4");
+          }
+        }
+        else if(testBoard[i][j].getBottomButton() != testBoard[i + 1][j]) {
+          Assert.fail("Incorrect assignmet for testBoard[i][j]: bottomButton");
+        }
+        //Test assigning leftButtons
+        if(j == 0) {
+          if(testBoard[i][j].getLeftButton() != null) {
+            Assert.fail("testBoard[i][j] should not have a leftButton when j is 0");
+          }
+        }
+        else if(testBoard[i][j].getLeftButton() != testBoard[i][j - 1]) {
+          Assert.fail("Incorrect assignmet for testBoard[i][j]: leftButton");
+        }
+        //Test assigning rightButtons
+        if(j == 4) {
+          if(testBoard[i][j].getRightButton() != null) {
+            Assert.fail("testBoard[i][j] should not have a rightButton when j is 4");
+          }
+        }
+        else if(testBoard[i][j].getRightButton() != testBoard[i][j + 1]) {
+          Assert.fail("Incorrect assignmet for testBoard[i][j]: rightButton");
+        }
+        //Test assigning topLefttButtons
+        if(i == 0 && j == 0) {
+          if(testBoard[i][j].getTopLeftButton() != null) {
+            Assert.fail("testBoard[i][j] should not have a topLeftButton when i and j are 0");
+          }
+        }
+        else if(testBoard[i][j].getTopLeftButton() != testBoard[i - 1][j - 1]) {
+          Assert.fail("Incorrect assignmet for testBoard[i][j]: topLeftButton");
+        }
+        //Test assigning bottomRightButtons
+        if(i == 4 && j == 4) {
+          if(testBoard[i][j].getBottomRightButton() != null) {
+            Assert.fail("testBoard[i][j] should not have a bottomRightButton when i and j are 4");
+          }
+        }
+        else if(testBoard[i][j].getBottomRightButton() != testBoard[i + 1][j + 1]) {
+          Assert.fail("Incorrect assignmet for testBoard[i][j]: bottomRightButton");
+        }
+        //Test assigning topLeftButtons
+        if(i == 4 && j == 0) {
+          if(testBoard[i][j].getBottomLeftButton() != null) {
+            Assert.fail("testBoard[i][j] should not have a bottomLeftButton when i is 4 and j is 0");
+          }
+        }
+        else if(testBoard[i][j].getBottomLeftButton() != testBoard[i + 1][j - 1]) {
+          Assert.fail("Incorrect assignmet for testBoard[i][j]: bottomLeftButton");
+        }
+        //Test assigning topRightButtons
+        if(i == 0 && j == 4) {
+          if(testBoard[i][j].getTopRightButton() != null) {
+            Assert.fail("testBoard[i][j] should not have a rightButton when i is 0 and j is 4");
+          }
+        }
+        else if(testBoard[i][j].getTopRightButton() != testBoard[i - 1][j + 1]) {
+          Assert.fail("Incorrect assignmet for testBoard[i][j]: topRightButton");
+        }
+      }
+    }
+  }  
+  
+  
+  /**
+   * Initializes predetermined boards for testing
+   */
+  @Before
+   public void setBoards() {
+    Color bl = Color.BLUE;
+    Color lg = Color.LIGHTGRAY;
+    Color yl = Color.YELLOW;
+    GameButton[][] singleBoard = new GameButton[5][5];
+    /* testSingleBoard should look like:
+     * {bl, bl, bl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     * {bl, lg, lg, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     */
+    GameButton[][] crossBoard = new GameButton[5][5];
+    /* testCrossBoard should look like:
+     * {yl, bl, bl, bl, yl}
+     * {bl, yl, lg, yl, bl}
+     * {bl, lg, lg, lg, bl}
+     * {bl, yl, lg, yl, bl}
+     * {yl, bl, bl, bl, byl}
+     */
+    GameButton[][] starBoard = new GameButton[5][5];
+    /* testStarBoard should look like:
+     * {lg, lg, lg, lg, lg}
+     * {lg, lg, lg, lg, lg}
+     * {bl, lg, lg, lg, bl}
+     * {bl, bl, bl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     */
+    GameButton[][] nullBoard = new GameButton[5][5];
+    /* testingNullBoard should look like:
+     * {bl, bl, bl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     * {bl, bl, yl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     */
+    GameButton[][] testBoard = new GameButton[5][5];
+    /* testingBoard should look like:
+     * {yl, bl, bl, bl, yl}
+     * {bl, yl, yl, yl, bl}
+     * {bl, yl, yl, yl, bl}
+     * {bl, yl, yl, yl, bl}
+     * {yl, bl, bl, bl, yl}
+     */
+    GameButton[][] testSingleBoard = new GameButton[5][5];
+    /* testSingleBoard should look like:
+     * {bl, bl, bl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     * {bl, yl, yl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     */
+    GameButton[][] testNullBoard = new GameButton[5][5];
+    /* testingNullBoard should look like:
+     * {bl, bl, bl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     * {bl, bl, yl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     * {bl, bl, bl, bl, bl}
+     */
+    GameButton[][] winBoard = new GameButton[2][2];
+    /* winBoard should look like: 
+     * {lg, lg}
+     * {lg, lg}
+     */
+    GameButton[][] loseBoard = new GameButton[3][3];
+    /* loseBoard should look like:
+     * {lg, lg, lg}
+     * {yl, lg, lg}
+     * {bl, lg, lg}
+     */
+    GameButton[][] noColumnsBoard = new GameButton[2][3];
+    /* noColumnsBoard should look like:
+     * {lg, lg, bl}
+     * {bl, bl, bl}
+     */
+    GameButton[][] oneColumnBoard = new GameButton[2][3];
+    /* oneColumnBoard should look like:
+     * {bl, bl, lg,
+     * {bl, bl, lg}
+     */
+    GameButton[][] manyColumnBoard = new GameButton[2][4];
+      /* manyColumnBoard should look like:
+       * {bl, bl, lg, lg}
+       * {bl, bl, lg, lg}
+       */
+    
+    //Sets these boards to be only blue buttons.
+    for(int i = 0; i < 5; i++) {
+      for(int j = 0; j < 5; j++) {
+        singleBoard[j][i] = new GameButton(bl);
+        crossBoard[j][i] = new GameButton(bl);
+        starBoard[j][i] = new GameButton(bl);
+        nullBoard[j][i] = new GameButton(bl);
+        testBoard[j][i] = new GameButton(bl);
+        testSingleBoard[j][i] = new GameButton(bl);
+        testNullBoard[j][i] = new GameButton(bl);
+        if(i < 3 && j < 3) {
+          loseBoard[j][i] = new GameButton(lg);
+        }
+      }
+    }
+    //creates a cross on the cross game, and 4 spots on starBoard and testBoard
+    for(int i = 1; i < 4; i++) {
+      for(int j = 1; j < 4; j++) {
+        crossBoard[i][2].updateColor(lg);
+        crossBoard[2][j].updateColor(lg);
+      }
+    }
+    //all these fill in the remaining spots on the boards as they should be filled
+    //crossBoard
+    crossBoard[1][1].updateColor(yl);
+    crossBoard[1][3].updateColor(yl);
+    crossBoard[3][1].updateColor(yl);
+    crossBoard[3][3].updateColor(yl);
+    crossBoard[0][0].updateColor(yl);
+    crossBoard[0][4].updateColor(yl);
+    crossBoard[4][0].updateColor(yl);
+    crossBoard[4][4].updateColor(yl);
+    //singleBoard & testSingleBoard
+    singleBoard[2][2].updateColor(lg);
+    singleBoard[1][2].updateColor(lg);
+    testSingleBoard[2][2].updateColor(yl);
+    testSingleBoard[1][2].updateColor(yl);
+    //nullBoard & testNullBoard
+    nullBoard[2][2].updateColor(yl);
+    testNullBoard[2][2].updateColor(yl);
+    //starBoard
+    starBoard[0][0].updateColor(lg);
+    starBoard[0][4].updateColor(lg);
+    starBoard[1][1].updateColor(lg);
+    starBoard[1][2].updateColor(lg);
+    starBoard[1][3].updateColor(lg);
+    starBoard[2][1].updateColor(lg);
+    starBoard[2][2].updateColor(lg);
+    starBoard[2][3].updateColor(lg);
+    starBoard[3][1].updateColor(lg);
+    starBoard[3][2].updateColor(lg);
+    starBoard[3][3].updateColor(lg);
+    starBoard[4][0].updateColor(lg);
+    starBoard[4][4].updateColor(lg);
+    //testBoard
+    testBoard[0][0].updateColor(yl);
+    testBoard[0][4].updateColor(yl);
+    testBoard[1][1].updateColor(yl);
+    testBoard[1][2].updateColor(yl);
+    testBoard[1][3].updateColor(yl);
+    testBoard[2][1].updateColor(yl);
+    testBoard[2][2].updateColor(yl);
+    testBoard[2][3].updateColor(yl);
+    testBoard[3][1].updateColor(yl);
+    testBoard[3][2].updateColor(yl);
+    testBoard[3][3].updateColor(yl);
+    testBoard[4][0].updateColor(yl);
+    testBoard[4][4].updateColor(yl);
+                  
+    //winBoard + loseBoard
+    winBoard[0][0] = new GameButton(lg);
+    winBoard[1][0] = new GameButton(lg);
+    winBoard[0][1] = new GameButton(lg);
+    winBoard[1][1] = new GameButton(lg);
+    loseBoard[0][1].updateColor(yl);
+    loseBoard[0][2].updateColor(bl);
+    
+    /*System.out.println("==================================");
+    printColorArray(crossBoard);
+    System.out.println("==================================");*/
+    
+    setBoard(singleBoard, "singleBoard");
+    setBoard(nullBoard, "nullBoard");
+    setBoard(crossBoard, "crossBoard");
+    setBoard(starBoard, "starBoard");
+    setBoard(testBoard, "testBoard");
+    setBoard(testNullBoard, "testNullBoard");
+    setBoard(testSingleBoard, "testSingleBoard");
+    setBoard(columnsBoard, "columnsBoard");
+    setBoard(testColumnsBoard, "testColumnsBoard");
+    setBoard(leftBoard, "leftBoard");
+    setBoard(diffBoard, "diffBoard");
+    setBoard(winBoard, "winBoard");
+    setBoard(loseBoard, "loseBoard");
+  } 
+  
+  
+  @Override
+  public void start(Stage primaryStage) {
+    setBoards();
+  }
+  
+  @BeforeClass
+  public static void testingLaunch() {
+    Thread testThread = new Thread() {      
+      public void run() {         
+        backgroundLaunch(new String[0]);     
+      }   
+    };   
+    testThread.start();
+  }
+  
+  public static void backgroundLaunch(String[] args) {
+    Application.launch(args);
+  }
+  
+  public void printColorArray(GameButton[][] array) {
+    for(int i = 0; i < array.length; i++) {
+      for(int j = 0; j < array[i].length; j++) {
+        if(array[j][i].isColor(Color.YELLOW)) System.out.print("ylw, ");
+        if(array[j][i].isColor(Color.BLUE)) System.out.print("blu, ");
+        if(array[j][i].isColor(Color.LIGHTGRAY)) System.out.print("gry, ");
+        if(j == array[i].length - 1) System.out.print("\n");
+      }
+    }
+  }
+  
+  
+}
